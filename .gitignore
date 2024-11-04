@@ -1,0 +1,6 @@
+venv
+config.json
+
+# Кэш
+
+*.pyc
