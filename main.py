@@ -12,12 +12,13 @@ config = load_config()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Открываем соединение с Neo4j
-    neo4j_handler = Neo4jHandler(config["neo4j_uri"], config["neo4j_user"], config["neo4j_password"])
-    app.state.neo4j_handler = neo4j_handler
+    # Если neo4j_handler уже был добавлен, пропускаем создание нового
+    if not hasattr(app.state, "neo4j_handler"):
+        neo4j_handler = Neo4jHandler(config["neo4j_uri"], config["neo4j_user"], config["neo4j_password"])
+        app.state.neo4j_handler = neo4j_handler
     yield
-    # Закрываем соединение с Neo4j при завершении работы приложения
-    neo4j_handler.close()
+    if hasattr(app.state, "neo4j_handler"):
+        app.state.neo4j_handler.close()
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
@@ -43,7 +44,7 @@ def get_node_with_relationships(node_id: int):
 def add_node_and_relationships(node_with_rels: NodeWithRelationships):
     """Добавляет новый узел и его связи."""
     app.state.neo4j_handler.add_node_and_relationships(
-        node_with_rels.node.dict(), [rel.dict() for rel in node_with_rels.relationships]
+        node_with_rels.node.model_dump(), [rel.model_dump() for rel in node_with_rels.relationships]
     )
     return {"message": "Узел и связи добавлены"}
 
