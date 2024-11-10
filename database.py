@@ -20,9 +20,7 @@ class Neo4jHandler:
             MATCH (n)-[r]->(m)
             RETURN n.id AS start_node_id, type(r) AS relationship_type, m.id AS end_node_id, m {.*} AS end_node
             """)
-            return [{"start_node_id": record["start_node_id"], 
-                     "relationship_type": record["relationship_type"],
-                     "end_node_id": record["end_node_id"],
+            return [{"relationship_type": record["relationship_type"],
                      "end_node": record["end_node"]} for record in result]
     
     def get_node_with_relationships(self, node_id):
