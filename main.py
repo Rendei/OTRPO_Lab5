@@ -35,6 +35,10 @@ def get_all_nodes():
     """Получает все узлы с их id и меткой."""
     return app.state.neo4j_handler.get_all_nodes()
 
+@app.get("/relationships")
+async def get_all_relationships():
+    return app.state.neo4j_handler.get_all_relationships()
+
 @app.get("/node/{node_id}")
 def get_node_with_relationships(node_id: int):
     """Возвращает узел и его связи с атрибутами."""

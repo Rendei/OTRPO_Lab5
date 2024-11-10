@@ -10,9 +10,21 @@ class Neo4jHandler:
 
     def get_all_nodes(self):
         with self.driver.session() as session:
-            result = session.run("MATCH (n) RETURN n.id as id, labels(n) as label")
-            return [{"id": record["id"], "label": record["label"][0]} for record in result]
+            result = session.run("MATCH (n) RETURN n.id as id, labels(n) as label, n.name as name")
+            return [{"id": record["id"], "label": record["label"][0], "name": record["name"]} for record in result]
 
+    def get_all_relationships(self):
+        with self.driver.session() as session:
+            result = session.run(
+            """
+            MATCH (n)-[r]->(m)
+            RETURN n.id AS start_node_id, type(r) AS relationship_type, m.id AS end_node_id, m {.*} AS end_node
+            """)
+            return [{"start_node_id": record["start_node_id"], 
+                     "relationship_type": record["relationship_type"],
+                     "end_node_id": record["end_node_id"],
+                     "end_node": record["end_node"]} for record in result]
+    
     def get_node_with_relationships(self, node_id):
         with self.driver.session() as session:
             result = session.run(
