@@ -60,3 +60,11 @@ curl -X GET "http://127.0.0.1:8000/nodes"
 ```bash
 curl -X POST "http://127.0.0.1:8000/node" -H "token: <auth_token>" -d "{...}"
 ```
+
+## Тесты
+
+Чтобы запустить тесты введите команду 
+
+```bash
+pytest tests/test_main.py
+```
